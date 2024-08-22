@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Таблица задач (AG Grid)</title>
+    <script src="https://unpkg.com/ag-grid-enterprise/dist/ag-grid-enterprise.min.js"></script>
+</head>
+<body>
+<div id="tasksGrid" style="height: 100vh; width: 100vw; padding-top: 40px" class="ag-theme-alpine"></div>
+margin
+<script>
+    const tasks = {{ json_tasks|safe }}
+    let gridOptions = {
+                autoSizeStrategy: {
+                    type: 'fitCellContents'
+                },
+                defaultColDef: {
+                    floatingFilter: true,
+                    resizable: true,
+                    sortable: true,
+                    filter: true,
+                    autoHeight: true,
+                },
+                columnDefs: [
+                    {headerName: "ID", field: "ID",},
+                    {
+                        headerName: "Название",
+                        field: "TITLE",
+                        cellRenderer: function (params) {
+                            let value = params.value
+                            let link = params.data.TASK_LINK
+                            return `<a href="${link}" target="_blank">` + value + '</a>'
+                        }
+                    },
+                    {headerName: "Статус", field: "STATUS"},
+                    {
+                        headerName: "Постановщик",
+                        field: "CREATED_NAME",
+                        cellRenderer: function (params) {
+                            let value = params.value
+                            let link = params.data.CREATED_LINK
+                            return `<a href="${link}" target="_blank">` + value + '</a>'
+                        }
+                    },
+                    {
+                        headerName: "Исполнитель",
+                        field: "RESPONSIBLE_NAME",
+                        cellRenderer: function (params) {
+                            let value = params.value
+                            let link = params.data.RESPONSIBLE_LINK
+                            return `<a href="${link}" target="_blank">` + value + '</a>'
+                        }
+                    },
+                    {headerName: "Дата создания", field: "CREATED_DATE", filter: 'agDateColumnFilter',},
+                    {headerName: "Дедлайн", field: "DEADLINE", filter: 'agDateColumnFilter',},
+
+                ],
+                rowData: tasks,
+                sideBar: true,
+                rowGroupPanelShow: "always",
+                onGridReady: function(params) {
+                    params.columnApi.autoSizeAllColumns();
+                }
+        };
+    document.addEventListener("DOMContentLoaded", () => {
+        let gridDiv = document.querySelector("#tasksGrid");
+        new agGrid.Grid(gridDiv, gridOptions);
+    });
+
+</script>
+</body>
+</html>
